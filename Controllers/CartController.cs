@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 
 namespace complexcart.Controllers;
 
+[ApiController]
+[Route("[controller]")]
 public class CartController : Controller
 {
     private static readonly string AuthUrl = Environment.GetEnvironmentVariable("AUTH_URL") ?? "";
@@ -52,7 +54,12 @@ public class CartController : Controller
                 await client.DeleteAsync($"{CartUrl}/cart/{userId}/{i.ItemId}");
                 isRemoved = true;
             }
-
+            
+            if (!isRemoved && !i.IsAvailable)
+            {
+                await client.DeleteAsync($"{CartUrl}/cart/{userId}/{i.ItemId}");
+                isRemoved = true;
+            }
             cartViewModel.Add(new CartViewModel(i.Name, i.ItemId, i.PricePerItem, cart.Quantity, i.Url, isRemoved));
         }
 
@@ -75,7 +82,12 @@ public class CartController : Controller
         {
             return NotFound("Item not found");
         }
-        
+
+        if (!i.IsAvailable)
+        {
+            return NotFound("Item not found");
+        }
+
         if (i.Quantity < item.Quantity)
         {
             return BadRequest("Item does not have enough quantity");
