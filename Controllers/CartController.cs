@@ -10,9 +10,9 @@ namespace complexcart.Controllers;
 [Route("[controller]")]
 public class CartController : Controller
 {
-    private static readonly string AuthUrl = Environment.GetEnvironmentVariable("AUTH_URL") ?? "";
-    private static readonly string CartUrl = Environment.GetEnvironmentVariable("CART_URL") ?? "";
-    private static readonly string InventoryUrl = Environment.GetEnvironmentVariable("INVENTORY_URL") ?? "";
+    private static readonly string AuthUrl = Environment.GetEnvironmentVariable("AUTH_URL") ?? "http://5.161.50.89:7321";
+    private static readonly string CartUrl = Environment.GetEnvironmentVariable("CART_URL") ?? "http://5.161.50.89:7324";
+    private static readonly string InventoryUrl = Environment.GetEnvironmentVariable("INVENTORY_URL") ?? "http://5.161.50.89:7322";
 
     // GET
     [HttpGet("{userId}")]
@@ -94,7 +94,7 @@ public class CartController : Controller
         }
         using var client = new HttpClient();
 
-        var result = await client.GetAsync($"{CartUrl}/cart/{userId}");
+        var result = await client.GetAsync($"{CartUrl}/cart/{userId}/{item.ItemId}");
         var responseContent = await result.Content.ReadAsStringAsync();
         var cartItems = JsonConvert.DeserializeObject<IEnumerable<Cart>>(responseContent);
         if (cartItems != null)
